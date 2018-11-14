@@ -35,6 +35,55 @@ setZero_HDL = 6
 relCoord_HDL = 7
 
 
+# rotate point using degrees
+def degRot(horiP, vertP, degrees):
+
+	hUc = math.cos(degrees * (math.pi * 2.0 / 360.0))
+	vUc = math.sin(degrees * (math.pi * 2.0 / 360.0))
+
+	hLine1 = hUc
+	vLine1 = vUc
+	hLine2 = -vUc
+	vLine2 = hUc
+
+	h = vertP * hLine2 + horiP * vLine2
+	v = horiP * vLine1 + vertP * hLine1
+	horiP = h
+	vertP = v
+
+	return (horiP, vertP)
+
+
+def applyTrans(x, y, z, meshData):
+	
+	# apply object size
+	x *= meshData.size[0]
+	y *= meshData.size[1]
+	z *= meshData.size[2]
+	
+	# apply object x axis rotation
+	vertsRot = degRot(y, z, meshData.rot[0] / (math.pi * 2.0 / 360.0))
+	y = vertsRot[0]
+	z = vertsRot[1]
+	
+	# apply object y axis rotation
+	vertsRot = degRot(x, z, -meshData.rot[1] / (math.pi * 2.0 / 360.0))
+	x = vertsRot[0]
+	z = vertsRot[1]
+	
+	# apply object z axis rotation
+	vertsRot = degRot(x, y, meshData.rot[2] / (math.pi * 2.0 / 360.0))
+	x = vertsRot[0]
+	y = vertsRot[1]
+	
+	# apply object location
+	x += meshData.loc[0]
+	y += meshData.loc[1]
+	z += meshData.loc[2]
+	
+	return (x, y, z)
+
+
 # script main function
 def ExportToGcode(file_name):
 	
@@ -106,6 +155,8 @@ def ExportToGcode(file_name):
 		y = mesh.data.verts[edges[0].v1.index][1]
 		z = mesh.data.verts[edges[0].v1.index][2]
 		
+		x, y, z = applyTrans(x, y, z, mesh)
+		
 		# find relative coordinates if true
 		if (relCoord_TOG):
 			xRel = x - xPrior
@@ -132,6 +183,8 @@ def ExportToGcode(file_name):
 			x = mesh.data.verts[edge.v2.index][0]
 			y = mesh.data.verts[edge.v2.index][1]
 			z = mesh.data.verts[edge.v2.index][2]
+			
+			x, y, z = applyTrans(x, y, z, mesh)
 			
 			# find relative coordinates if true
 			if (relCoord_TOG):
