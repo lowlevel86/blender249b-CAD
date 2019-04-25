@@ -4,7 +4,7 @@
 Name: 'Reorder Vertex Line'
 Blender: 249
 Group: 'Mesh'
-Tip: 'Can reorder vertex lines so they can be used as paths.'
+Tip: 'Reorder vertex lines so they can be used as paths.'
 """
 
 __bpydoc__ = """\
@@ -63,10 +63,6 @@ def findPathHead(ptsX, ptsY, ptsZ, linesA, linesB):
 	#if there is no path head then return -1
 	if pathHeadCnt == 0:
 		return -1
-	
-	#if there is 2 or more path heads then return -2
-	if pathHeadCnt >= 2:
-		return -2
 	
 	return pathHead
 
@@ -170,10 +166,6 @@ def mainFunc():
 	
 	if pathHead == -1:
 		Draw.PupMenu("Create double at beginning (Edit Mode: RMB, Press 'E', RMB)")
-		return
-
-	if pathHead == -2:
-		Draw.PupMenu("There are 2 or more doubles indicating a beginning.")
 		return
 
 
